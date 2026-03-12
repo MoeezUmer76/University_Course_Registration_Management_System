@@ -1,0 +1,62 @@
+### 1. Register a New Admin User
+POST http://localhost:5000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "admin@ums.edu.pk",
+  "password": "SuperSecretPassword123",
+  "role": "Admin"
+}
+
+###
+
+### 2. Login to Get Your Token
+POST http://localhost:5000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ums.edu.pk",
+  "password": "SuperSecretPassword123"
+}
+
+### 3. Test Secret Route (Without Token - Should Fail)
+GET http://localhost:5000/api/v1/admin/dashboard
+
+###
+
+### 4. Test Secret Route (With Token - Should Succeed)
+# REPLACE "your_actual_token_here" with the massive string you got from logging in!
+GET http://localhost:5000/api/v1/admin/dashboard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NzMxNDM0MDgsImV4cCI6MTc3MzIyOTgwOH0.ixRcq_f9BX3dGUNFf6BOvHDHdpZFqtZTVWS79636K4g
+
+### 5. ACID Transaction (Success Case)
+POST http://localhost:5000/api/v1/enrollment
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NzMxNDM0MDgsImV4cCI6MTc3MzIyOTgwOH0.ixRcq_f9BX3dGUNFf6BOvHDHdpZFqtZTVWS79636K4g
+Content-Type: application/json
+
+{
+  "student_id": 1,
+  "section_id": 5
+}
+
+###
+
+### 6. ACID Transaction (Rollback / Failure Case - Duplicate)
+POST http://localhost:5000/api/v1/enrollment
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NzMxNDM0MDgsImV4cCI6MTc3MzIyOTgwOH0.ixRcq_f9BX3dGUNFf6BOvHDHdpZFqtZTVWS79636K4g
+Content-Type: application/json
+
+{
+  "student_id": 1,
+  "section_id": 5
+}
+
+### 7. ACID Transaction (Success Case - COMMIT)
+POST http://localhost:5000/api/v1/enrollment
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJyb2xlIjoiQWRtaW4iLCJpYXQiOjE3NzMxNDM0MDgsImV4cCI6MTc3MzIyOTgwOH0.ixRcq_f9BX3dGUNFf6BOvHDHdpZFqtZTVWS79636K4g
+Content-Type: application/json
+
+{
+  "student_id": 2,
+  "section_id": 15
+}
