@@ -104,3 +104,36 @@ paths:
           description: Transaction failed and rolled back (e.g., duplicate or capacity full)
         '403':
           description: Access denied (Invalid role)
+
+  /fees/pay:
+    post:
+      summary: Process a fee payment (ACID Transaction)
+      description: Securely processes a fee payment. Implements row-level locking and rollback on overpayment.
+      tags:
+        - Fees
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fee_id
+                - payment_amount
+              properties:
+                fee_id:
+                  type: integer
+                  example: 1
+                payment_amount:
+                  type: number
+                  format: float
+                  example: 10000
+      responses:
+        '200':
+          description: Payment processed successfully (Transaction Committed)
+        '400':
+          description: Bad Request / Overpayment (Transaction Rolled Back)
+        '401':
+          description: Unauthorized - No valid token provided
